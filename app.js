@@ -26,3 +26,20 @@ user1.greet("Je t'aime");
 user2.greet("Je t'aime");
 user1.giveAge();
 console.log(user1, user2);
+class Abstract {
+    constructor() { }
+    concret() {
+        console.log("Coucou");
+    }
+}
+class Concrete extends Abstract {
+    constructor() {
+        super();
+    }
+    abtrait() {
+        console.log("Implémentation forcée");
+    }
+}
+const a1 = new Concrete();
+a1.concret();
+a1.abtrait();

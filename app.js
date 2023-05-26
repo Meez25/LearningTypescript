@@ -1,12 +1,31 @@
 "use strict";
-const hobbies = ['Sports', 'Cooking'];
-const activeHobbies = ['Hiking'];
-activeHobbies.push(...hobbies);
-console.log(activeHobbies);
-const add = (...numbers) => {
-    return numbers.reduce((curResult, curValue) => {
-        return curResult + curValue;
-    }, 0);
-};
-const addedNumbers = add(1, 2, 4, 5);
-console.log(addedNumbers);
+class Department {
+    constructor(id, name) {
+        this.id = id;
+        this.name = name;
+        this.employees = [];
+    }
+    describe() {
+        console.log(`This department named ${this.name} has an ID of ${this.id}`);
+    }
+    addEmployee(e) {
+        this.employees.push(e);
+    }
+    printEmployeeInformation() {
+        console.log(this.employees.length);
+        console.log(this.employees);
+    }
+}
+const accounting = new Department(1, "Accounting");
+accounting.describe();
+accounting.addEmployee("Yann");
+accounting.addEmployee("Hélène");
+accounting.printEmployeeInformation();
+// class Animal {
+//   type: string
+//   constructor(t: string) {
+//     this.type = t;
+//   }
+// }
+// const animal = new Animal("Kangourou");
+// console.log(animal);

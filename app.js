@@ -60,3 +60,8 @@ function getSpeed(a) {
 let a = { type: "bird", flyingSpeed: 60 };
 console.log(getSpeed(a));
 console.log(getSpeed({ type: "horse", runningSpeed: 176 }));
+// Type Casting
+const p = document.querySelector("p");
+const pAsId = document.getElementById("message-output");
+pAsId.textContent = "salut";
+pAsId.textContent = "jack";

@@ -1,61 +1,33 @@
-interface Greetable {
+type Admin = {
   name: string;
-  greet(phrase: string): void;
+  privileges: string[];
+};
+
+type Employee = {
+  name: string;
+  startDate: Date;
+};
+
+type ElevatedEmployee = Employee & Admin;
+
+const e1: ElevatedEmployee = {
+  name: "Yann",
+  privileges: ['create-server'],
+  startDate: new Date(),
 }
 
-interface Aged {
-  age: number;
-  giveAge(): void;
-}
+// On peut remplacer les type par des interfaces, et dans ce cas, utiliser "interface ElevatedEmployee extends Admin, Employee {}"
 
-class Person implements Greetable, Aged {
-  constructor(public name: string, public age: number) { }
-  greet(phrase: string): void {
-    console.log(phrase + " " + this.name)
+
+type Combinable= number | string;
+type Numeric= number | boolean;
+
+type Universal= Combinable & Numeric;
+
+function addibou(a: Combinable, b: Combinable) {
+  if (typeof a === 'string' || typeof b === 'string'){
+    return a.toString() + b.toString()
   }
-  giveAge(): void {
-    console.log("J'ai " + this.age + " ans.")
-  }
+  return a + b;
 }
 
-let user1: Person;
-let user2 = new Person("Hélène", 31);
-let user3 = new Person("Maël", 1.5);
-
-user1 = {
-  name: "Maël", age: 1.5, greet(phrase) {
-    console.log(phrase + ' ' + this.name)
-  },
-  giveAge() {
-    console.log("J'ai " + this.age + " ans."
-    )
-  },
-}
-
-user1.greet("Je t'aime");
-user2.greet("Je t'aime");
-user1.giveAge();
-
-console.log(user1, user2);
-
-abstract class Abstract {
-  constructor(){}
-  abstract abtrait(): void
-  
-  concret (){
-    console.log("Coucou")
-  }
-}
-
-class Concrete extends Abstract {
-  constructor(){
-  super();
-  }
-  abtrait() {
-    console.log("Implémentation forcée");
-  }
-}
-
-const a1 = new Concrete();
-a1.concret()
-a1.abtrait()

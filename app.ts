@@ -8,15 +8,15 @@ abstract class Department {
 
   abstract describe(): void
 
-  static createEmployee (name: string) {
-    return {name: name}
+  static createEmployee(name: string) {
+    return { name: name }
   }
 
-  addEmployee(e: string){
+  addEmployee(e: string) {
     this.employees.push(e);
   }
 
-  printEmployeeInformation(){
+  printEmployeeInformation() {
     console.log(this.employees.length)
     console.log(this.employees)
   }
@@ -24,7 +24,7 @@ abstract class Department {
 
 class ITDepartment extends Department {
   salut: string = "heu";
-  constructor(id: number, public admins: string[]){
+  constructor(id: number, public admins: string[]) {
     super(id, "IT");
     this.admins = admins
   }
@@ -44,7 +44,7 @@ class AccountingDepartment extends Department {
   }
 
   get mostRecentReport() {
-    if (this.lastReport){
+    if (this.lastReport) {
       this.PI = 61
       console.log(this.PI);
       return this.lastReport;
@@ -57,22 +57,22 @@ class AccountingDepartment extends Department {
     this.addReport(value)
   }
 
-  constructor(id: number, private reports: string[]){
+  constructor(id: number, private reports: string[]) {
     super(id, "Accounting");
     this.reports = reports
     this.lastReport = reports[0]
   }
 
   addEmployee(e: string): void {
-    this.employees.push(e); 
+    this.employees.push(e);
   }
 
-  addReport(report: string) {
+  addReport(report: string) {
     this.reports.push(report);
     this.lastReport = report
   }
 
-  printReport(){
+  printReport() {
     console.log(this.reports);
   }
 
@@ -96,16 +96,16 @@ class AccountingDepartment extends Department {
 //
 // Steps :
 // 1. Make the constructor private
-// 2. Create a static method "getInstance" that checks if the static property is of type "Singleton", if so, return this. the static property
+// 2. Create a static method "getInstance" that checks if the private static property is of type "Singleton", if so, return this. the static property
 // of else create a new instance with the private constructor.
-  
+
 
 class Singleton {
   private static instance: Singleton;
-  private constructor(public data: string){}
+  private constructor(public data: string) { }
 
-  static getInstance(){
-    if (Singleton.instance){
+  static getInstance() {
+    if (Singleton.instance) {
       return this.instance
     } else {
       return new Singleton("Je suis unique !");
@@ -118,6 +118,31 @@ const singleton2 = Singleton.getInstance();
 
 console.log(singleton);
 console.log(singleton2);
+
+
+// Create another Singleton
+class Store {
+  private static instance: Store
+  private constructor(private string: string) { }
+
+  static getInstance() {
+    if (this.instance) {
+      return this.instance
+    }
+    else {
+      return new Store("Unique !")
+    }
+  }
+
+  describe(){
+    console.log(this.string)
+  }
+}
+
+const o1 = Store.getInstance().describe();
+const o2 = Store.getInstance().describe();
+
+
 
 
 

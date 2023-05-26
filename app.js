@@ -76,7 +76,7 @@ class AccountingDepartment extends Department {
 //
 // Steps :
 // 1. Make the constructor private
-// 2. Create a static method "getInstance" that checks if the static property is of type "Singleton", if so, return this. the static property
+// 2. Create a static method "getInstance" that checks if the private static property is of type "Singleton", if so, return this. the static property
 // of else create a new instance with the private constructor.
 class Singleton {
     constructor(data) {
@@ -95,6 +95,25 @@ const singleton = Singleton.getInstance();
 const singleton2 = Singleton.getInstance();
 console.log(singleton);
 console.log(singleton2);
+// Create another Singleton
+class Store {
+    constructor(string) {
+        this.string = string;
+    }
+    static getInstance() {
+        if (this.instance) {
+            return this.instance;
+        }
+        else {
+            return new Store("Unique !");
+        }
+    }
+    describe() {
+        console.log(this.string);
+    }
+}
+const o1 = Store.getInstance().describe();
+const o2 = Store.getInstance().describe();
 // class Animal {
 //   type: string
 //   constructor(t: string) {

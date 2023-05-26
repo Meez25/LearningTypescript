@@ -45,8 +45,8 @@ let admin1: Admin = {
   name: "DeadPool",
 }
 let employee1: Employee = {
-  name : "Boring Employee",
-  startDate : new Date(),
+  name: "Boring Employee",
+  startDate: new Date(),
 }
 
 printEmployeeInformation(admin1);
@@ -54,24 +54,24 @@ printEmployeeInformation(employee1);
 
 
 class Truck {
-  drive(){
+  drive() {
     console.log("I'm driving a truck");
   }
 }
 
 class Car {
-  car(){
+  car() {
     console.log("I'm driving a car");
   }
 }
 
 type Vehicle = Car | Truck;
 
-function useVehicle(a: Vehicle){
-  if (a instanceof Car){
+function useVehicle(a: Vehicle) {
+  if (a instanceof Car) {
     a.car();
   }
-  if (a instanceof Truck){
+  if (a instanceof Truck) {
     a.drive();
   }
 };
@@ -82,3 +82,28 @@ const truck = new Truck();
 useVehicle(car);
 useVehicle(truck);
 
+
+interface Bird {
+  type: "bird";
+  flyingSpeed: number;
+}
+
+interface Horse {
+  type: "horse";
+  runningSpeed: number;
+}
+
+type Animal = Horse | Bird;
+function getSpeed(a: Animal) {
+  switch (a.type) {
+    case "bird":
+      return a.flyingSpeed;
+    case "horse":
+      return a.runningSpeed;
+  }
+}
+
+let a: Animal = { type: "bird", flyingSpeed: 60 }
+
+console.log(getSpeed(a));
+console.log(getSpeed({ type: "horse", runningSpeed: 176 }));

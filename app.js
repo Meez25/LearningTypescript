@@ -49,3 +49,14 @@ const car = new Car();
 const truck = new Truck();
 useVehicle(car);
 useVehicle(truck);
+function getSpeed(a) {
+    switch (a.type) {
+        case "bird":
+            return a.flyingSpeed;
+        case "horse":
+            return a.runningSpeed;
+    }
+}
+let a = { type: "bird", flyingSpeed: 60 };
+console.log(getSpeed(a));
+console.log(getSpeed({ type: "horse", runningSpeed: 176 }));

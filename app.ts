@@ -52,3 +52,33 @@ let employee1: Employee = {
 printEmployeeInformation(admin1);
 printEmployeeInformation(employee1);
 
+
+class Truck {
+  drive(){
+    console.log("I'm driving a truck");
+  }
+}
+
+class Car {
+  car(){
+    console.log("I'm driving a car");
+  }
+}
+
+type Vehicle = Car | Truck;
+
+function useVehicle(a: Vehicle){
+  if (a instanceof Car){
+    a.car();
+  }
+  if (a instanceof Truck){
+    a.drive();
+  }
+};
+
+const car = new Car();
+const truck = new Truck();
+
+useVehicle(car);
+useVehicle(truck);
+

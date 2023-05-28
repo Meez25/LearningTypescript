@@ -1,118 +1,107 @@
-type Admin = {
-  name: string;
-  privileges: string[];
-};
+// Decotators
 
-type Employee = {
-  name: string;
-  startDate: Date;
-};
-
-type ElevatedEmployee = Employee & Admin;
-
-const e1: ElevatedEmployee = {
-  name: "Yann",
-  privileges: ['create-server'],
-  startDate: new Date(),
+function Logger(constructor: Function){
+  console.log(constructor);
 }
 
-// On peut remplacer les type par des interfaces, et dans ce cas, utiliser "interface ElevatedEmployee extends Admin, Employee {}"
+@Logger
+class Person {
+  name = "Yann"
 
-
-type Combinable = number | string;
-type Numeric = number | boolean;
-
-type Universal = Combinable & Numeric;
-
-function addibou(a: Combinable, b: Combinable) {
-  if (typeof a === 'string' || typeof b === 'string') {
-    return a.toString() + b.toString()
-  }
-  return a + b;
-}
-
-type UnknownEmployee = Employee | Admin;
-
-function printEmployeeInformation(emp: UnknownEmployee) {
-  console.log("Here is my name : " + emp.name);
-  if ('privileges' in emp) {
-    console.log("Here is my privilege : " + emp.privileges);
+  constructor(){
+    console.log("Creating object...");
   }
 }
 
-let admin1: Admin = {
-  privileges: ["kick ass"],
-  name: "DeadPool",
-}
-let employee1: Employee = {
-  name: "Boring Employee",
-  startDate: new Date(),
-}
+const yann = new Person();
+console.log(yann);
 
-printEmployeeInformation(admin1);
-printEmployeeInformation(employee1);
+// As a decorator factory
+// It allows to pass parameters to the logger factory
 
-
-class Truck {
-  drive() {
-    console.log("I'm driving a truck");
+function LoggerWithParam(logString: string){
+  return function(constructor: Function){
+    console.log(constructor);
+    console.log(logString);
   }
 }
 
-class Car {
-  car() {
-    console.log("I'm driving a car");
+
+// Write on the dom with decorator
+
+function writeOnDom(template: string, hookID: string){
+  return function(constructor: any){
+    const p = new constructor()
+    const hookEl = document.getElementById(hookID);
+    if (hookEl){
+      hookEl.innerHTML = p.name
+    }
   }
 }
 
-type Vehicle = Car | Truck;
+@writeOnDom("<h1>Salut la compagnie !</h1>", "app")
+//@LoggerWithParam("Logging hard !")
+class PersonWithLoggerFactory {
+  name = "Yann"
 
-function useVehicle(a: Vehicle) {
-  if (a instanceof Car) {
-    a.car();
-  }
-  if (a instanceof Truck) {
-    a.drive();
-  }
-};
-
-const car = new Car();
-const truck = new Truck();
-
-useVehicle(car);
-useVehicle(truck);
-
-
-interface Bird {
-  type: "bird";
-  flyingSpeed: number;
-}
-
-interface Horse {
-  type: "horse";
-  runningSpeed: number;
-}
-
-type Animal = Horse | Bird;
-function getSpeed(a: Animal) {
-  switch (a.type) {
-    case "bird":
-      return a.flyingSpeed;
-    case "horse":
-      return a.runningSpeed;
+  constructor(){
+    console.log("Creating object...");
   }
 }
 
-let a: Animal = { type: "bird", flyingSpeed: 60 }
 
-console.log(getSpeed(a));
-console.log(getSpeed({ type: "horse", runningSpeed: 176 }));
+// property decorator
+// the property decorator receives the target
 
+function Log(target: any, variable: string){
+  console.log(target, variable); 
+}
 
-// Type Casting
+function Log2(target: any, name: string, descriptor: PropertyDescriptor){
+  console.log("Accessor decorator")
+  console.log(target)
+  console.log(name)
+  console.log(descriptor)
+}
 
-const p = document.querySelector("p");
-const pAsId = <HTMLParagraphElement>document.getElementById("message-output");
+function Log3(target: any, name: string, descriptor: PropertyDescriptor){
+  console.log("Method decorator")
+  console.log(target)
+  console.log(name)
+  console.log(descriptor)
+}
 
-pAsId.textContent = "salut";
-pAsId.textContent = "jack";
+function Log4(target: any, name: string, position: number){
+  console.log("Parameter")
+  console.log(target)
+  console.log(name)
+  console.log(position)
+}
+
+class Product {
+  @Log
+  title: string;
+  private _price: number;
+
+  constructor(title: string, price: number){
+    this.title = title;
+    this._price = price;
+  }
+
+  @Log2
+  set price(val: number){
+    if (val > 0){
+      this._price = val;
+    }
+  }
+
+  get price(){
+    return this._price;
+  }
+
+  @Log3
+  getTax(@Log4 tax: number){
+    return this._price * 1.1
+  }
+}
+

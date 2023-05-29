@@ -1,107 +1,97 @@
-// Decotators
+// Autobind decorator
 
-function Logger(constructor: Function){
-  console.log(constructor);
+function Autobind(_: any, _2: string, descriptor: PropertyDescriptor) {
+  const originalMethod = descriptor.value;
+  const adjDescriptor: PropertyDescriptor = {
+    configurable: true,
+    enumerable: false,
+    get() {
+      const boundFn = originalMethod.bind(this);
+      return boundFn;
+    }
+  };
+  return adjDescriptor;
 }
 
-@Logger
-class Person {
-  name = "Yann"
+class Printer {
+  message = "This works !"
 
-  constructor(){
-    console.log("Creating object...");
+  @Autobind
+  showMessage() {
+    console.log(this.message)
   }
 }
 
-const yann = new Person();
-console.log(yann);
+const p = new Printer();
 
-// As a decorator factory
-// It allows to pass parameters to the logger factory
+const button = document.querySelector("button")!;
+button.addEventListener("click", p.showMessage);
 
-function LoggerWithParam(logString: string){
-  return function(constructor: Function){
-    console.log(constructor);
-    console.log(logString);
+
+interface ValidatorConfig {
+  [property: string]: {
+    [validatableProp: string]: string[]
   }
 }
 
+const registeredValidators: ValidatorConfig = {};
 
-// Write on the dom with decorator
+function Requireda(target: any, name: string) {
+  const className = target.constructor.name
+  registeredValidators[className] = { ...registeredValidators[className], [name]: ["Required"] }
+}
 
-function writeOnDom(template: string, hookID: string){
-  return function(constructor: any){
-    const p = new constructor()
-    const hookEl = document.getElementById(hookID);
-    if (hookEl){
-      hookEl.innerHTML = p.name
+function PositiveNumber(target: any, name: string) {
+  const className = target.constructor.name
+  registeredValidators[className] = { ...registeredValidators[className], [name]: ["Positive"] }
+}
+
+function validate(obj: any) {
+  const className = obj.constructor.name;
+  const classValidators = registeredValidators[className]
+  console.log(registeredValidators);
+  if (!classValidators) {
+    return true;
+  }
+  let isValid = true;
+  for (const prop in classValidators) {
+    for (const validator of classValidators[prop]) {
+      switch (validator) {
+        case "Required":
+          isValid = isValid && !!obj[prop];
+          break;
+        case "Positive":
+          isValid = isValid && obj[prop] > 0;
+          break;
+      }
     }
   }
+  return isValid;
 }
 
-@writeOnDom("<h1>Salut la compagnie !</h1>", "app")
-//@LoggerWithParam("Logging hard !")
-class PersonWithLoggerFactory {
-  name = "Yann"
-
-  constructor(){
-    console.log("Creating object...");
-  }
-}
-
-
-// property decorator
-// the property decorator receives the target
-
-function Log(target: any, variable: string){
-  console.log(target, variable); 
-}
-
-function Log2(target: any, name: string, descriptor: PropertyDescriptor){
-  console.log("Accessor decorator")
-  console.log(target)
-  console.log(name)
-  console.log(descriptor)
-}
-
-function Log3(target: any, name: string, descriptor: PropertyDescriptor){
-  console.log("Method decorator")
-  console.log(target)
-  console.log(name)
-  console.log(descriptor)
-}
-
-function Log4(target: any, name: string, position: number){
-  console.log("Parameter")
-  console.log(target)
-  console.log(name)
-  console.log(position)
-}
-
-class Product {
-  @Log
+class Course {
+  @Requireda
   title: string;
-  private _price: number;
+  @PositiveNumber
+  price: number;
 
-  constructor(title: string, price: number){
-    this.title = title;
-    this._price = price;
-  }
-
-  @Log2
-  set price(val: number){
-    if (val > 0){
-      this._price = val;
-    }
-  }
-
-  get price(){
-    return this._price;
-  }
-
-  @Log3
-  getTax(@Log4 tax: number){
-    return this._price * 1.1
+  constructor(t: string, p: number) {
+    this.title = t;
+    this.price = p;
   }
 }
 
+
+const courseForm = document.querySelector("form")!;
+courseForm.addEventListener("submit", (e) => {
+  e.preventDefault();
+  const titleField = document.getElementById("title")! as HTMLInputElement;
+  const priceField = document.getElementById("price")! as HTMLInputElement;
+
+  const newCourse = new Course(titleField.value, +priceField.value);
+  if (!validate(newCourse)) {
+    alert("Invalid output, please try again !");
+    return;
+  }
+  console.log(newCourse);
+});

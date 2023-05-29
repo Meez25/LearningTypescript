@@ -1,105 +1,89 @@
 "use strict";
-// Decotators
+// Autobind decorator
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
-var __param = (this && this.__param) || function (paramIndex, decorator) {
-    return function (target, key) { decorator(target, key, paramIndex); }
-};
-function Logger(constructor) {
-    console.log(constructor);
-}
-let Person = class Person {
-    constructor() {
-        this.name = "Yann";
-        console.log("Creating object...");
-    }
-};
-Person = __decorate([
-    Logger
-], Person);
-const yann = new Person();
-console.log(yann);
-// As a decorator factory
-// It allows to pass parameters to the logger factory
-function LoggerWithParam(logString) {
-    return function (constructor) {
-        console.log(constructor);
-        console.log(logString);
-    };
-}
-// Write on the dom with decorator
-function writeOnDom(template, hookID) {
-    return function (constructor) {
-        const p = new constructor();
-        const hookEl = document.getElementById(hookID);
-        if (hookEl) {
-            hookEl.innerHTML = p.name;
+function Autobind(_, _2, descriptor) {
+    const originalMethod = descriptor.value;
+    const adjDescriptor = {
+        configurable: true,
+        enumerable: false,
+        get() {
+            const boundFn = originalMethod.bind(this);
+            return boundFn;
         }
     };
+    return adjDescriptor;
 }
-let PersonWithLoggerFactory = 
-//@LoggerWithParam("Logging hard !")
-class PersonWithLoggerFactory {
+class Printer {
     constructor() {
-        this.name = "Yann";
-        console.log("Creating object...");
+        this.message = "This works !";
     }
-};
-PersonWithLoggerFactory = __decorate([
-    writeOnDom("<h1>Salut la compagnie !</h1>", "app")
-    //@LoggerWithParam("Logging hard !")
-], PersonWithLoggerFactory);
-// property decorator
-// the property decorator receives the target
-function Log(target, variable) {
-    console.log(target, variable);
-}
-function Log2(target, name, descriptor) {
-    console.log("Accessor decorator");
-    console.log(target);
-    console.log(name);
-    console.log(descriptor);
-}
-function Log3(target, name, descriptor) {
-    console.log("Method decorator");
-    console.log(target);
-    console.log(name);
-    console.log(descriptor);
-}
-function Log4(target, name, position) {
-    console.log("Parameter");
-    console.log(target);
-    console.log(name);
-    console.log(position);
-}
-class Product {
-    constructor(title, price) {
-        this.title = title;
-        this._price = price;
+    showMessage() {
+        console.log(this.message);
     }
-    set price(val) {
-        if (val > 0) {
-            this._price = val;
+}
+__decorate([
+    Autobind
+], Printer.prototype, "showMessage", null);
+const p = new Printer();
+const button = document.querySelector("button");
+button.addEventListener("click", p.showMessage);
+const registeredValidators = {};
+function Requireda(target, name) {
+    const className = target.constructor.name;
+    registeredValidators[className] = Object.assign(Object.assign({}, registeredValidators[className]), { [name]: ["Required"] });
+}
+function PositiveNumber(target, name) {
+    const className = target.constructor.name;
+    registeredValidators[className] = Object.assign(Object.assign({}, registeredValidators[className]), { [name]: ["Positive"] });
+}
+function validate(obj) {
+    const className = obj.constructor.name;
+    const classValidators = registeredValidators[className];
+    console.log(registeredValidators);
+    if (!classValidators) {
+        return true;
+    }
+    let isValid = true;
+    for (const prop in classValidators) {
+        for (const validator of classValidators[prop]) {
+            switch (validator) {
+                case "Required":
+                    isValid = isValid && !!obj[prop];
+                    break;
+                case "Positive":
+                    isValid = isValid && obj[prop] > 0;
+                    break;
+            }
         }
     }
-    get price() {
-        return this._price;
-    }
-    getTax(tax) {
-        return this._price * 1.1;
+    return isValid;
+}
+class Course {
+    constructor(t, p) {
+        this.title = t;
+        this.price = p;
     }
 }
 __decorate([
-    Log
-], Product.prototype, "title", void 0);
+    Requireda
+], Course.prototype, "title", void 0);
 __decorate([
-    Log2
-], Product.prototype, "price", null);
-__decorate([
-    Log3,
-    __param(0, Log4)
-], Product.prototype, "getTax", null);
+    PositiveNumber
+], Course.prototype, "price", void 0);
+const courseForm = document.querySelector("form");
+courseForm.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const titleField = document.getElementById("title");
+    const priceField = document.getElementById("price");
+    const newCourse = new Course(titleField.value, +priceField.value);
+    if (!validate(newCourse)) {
+        alert("Invalid output, please try again !");
+        return;
+    }
+    console.log(newCourse);
+});
